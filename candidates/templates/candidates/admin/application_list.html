@@ -1,0 +1,59 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block title %}Manage Applications{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'candidates/css/admin_style.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+  <a href="{% url 'admin:candidates_application_changelist' %}">Applications</a> &rsaquo;
+  Application List
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="application-list">
+  <h1>Manage Applications</h1>
+  
+  <form method="GET" class="filter-form">
+    <select name="status" class="form-control">
+      <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="approved" {% if current_status == 'approved' %}selected{% endif %}>Approved</option>
+      <option value="rejected" {% if current_status == 'rejected' %}selected{% endif %}>Rejected</option>
+    </select>
+    <select name="position" class="form-control">
+      <option value="">All Positions</option>
+      {% for position in positions %}
+        <option value="{{ position.id }}" {% if position.id == current_position %}selected{% endif %}>{{ position.title }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Candidate</th>
+        <th>Position</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for application in applications %}
+        <tr>
+          <td>{{ application.user.full_name }}</td>
+          <td>{{ application.position.title }}</td>
+          <td>{{ application.get_status_display }}</td>
+          <td>
+            <a href="{% url 'admin:candidates_application_change' application.pk %}" class="btn btn-info">Review</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

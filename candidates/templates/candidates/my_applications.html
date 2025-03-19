@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="card shadow-lg p-4 rounded">
+            <h1 class="display-6 mb-4 text-center text-primary">My Applications</h1>
+            
+            {% if applications %}
+                <ul class="list-group">
+                    {% for application in applications %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-dark">{{ application.position.title }}</strong> <br>
+                                <span class="badge 
+                                    {% if application.status == 'approved' %}bg-success
+                                    {% elif application.status == 'rejected' %}bg-danger
+                                    {% else %}bg-warning{% endif %}">
+                                    {{ application.get_status_display }}
+                                </span>
+
+                                {% if application.status == 'rejected' %}
+                                    <p class="text-muted small mt-1">
+                                        <strong>Rejection Reason:</strong> {{ application.rejection_reason }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            {% if application.status == 'pending' %}
+                                <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#withdrawModal{{ application.pk }}">
+                                    Withdraw
+                                </a>
+
+                                <!-- Modal Confirmation for Withdrawal -->
+                                <div class="modal fade" id="withdrawModal{{ application.pk }}" tabindex="-1" aria-labelledby="withdrawModalLabel{{ application.pk }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title text-danger" id="withdrawModalLabel{{ application.pk }}">Confirm Withdrawal</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to withdraw your application for the position of "<strong>{{ application.position.title }}</strong>"?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="POST" action="{% url 'candidates:withdraw_application' application.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Confirm Withdrawal</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center text-muted">You have not applied for any positions yet.</p>
+            {% endif %}
+
+            <!-- Back Button -->
+            <div class="text-center mt-4">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    &larr; Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('/static/images/miu.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .list-group-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+    </style>
+{% endblock %}

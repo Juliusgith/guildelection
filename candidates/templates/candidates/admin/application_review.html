@@ -1,0 +1,184 @@
+{% extends 'admin/base_site.html' %} 
+{% load static %} 
+{% block title %}Review Candidate Application{% endblock %} 
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'candidates/css/admin_review.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+  <a href="{% url 'admin:candidates_candidate_changelist' %}">Candidates</a> &rsaquo;
+  Application Review
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="application-review">
+  <h1>Review Application: {{ candidate.name }}</h1>
+  
+  <div class="candidate-info">
+    <div class="profile-section">
+      <h2>Candidate Profile</h2>
+      <div class="field-row">
+        <span class="field-label">Name:</span>
+        <span class="field-value">{{ candidate.name }}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Email:</span>
+        <span class="field-value">{{ candidate.email }}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Phone:</span>
+        <span class="field-value">{{ candidate.phone }}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Position:</span>
+        <span class="field-value">{{ candidate.position_applied }}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Application Date:</span>
+        <span class="field-value">{{ candidate.application_date }}</span>
+      </div>
+    </div>
+    
+    <div class="resume-section">
+      <h2>Resume</h2>
+      {% if candidate.resume %}
+        <a href="{{ candidate.resume.url }}" class="btn" target="_blank">View Resume</a>
+        <a href="{{ candidate.resume.url }}" class="btn" download>Download Resume</a>
+      {% else %}
+        <p>No resume uploaded</p>
+      {% endif %}
+    </div>
+    
+    <div class="application-questions">
+      <h2>Application Questions</h2>
+      {% for question in application_questions %}
+        <div class="question-answer">
+          <h3>{{ question.question_text }}</h3>
+          <p>{{ question.answer }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="assessments">
+      <h2>Assessment Results</h2>
+      {% if assessments %}
+        <table class="assessment-table">
+          <thead>
+            <tr>
+              <th>Assessment</th>
+              <th>Score</th>
+              <th>Completed On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assessment in assessments %}
+              <tr>
+                <td>{{ assessment.name }}</td>
+                <td>{{ assessment.score }}</td>
+                <td>{{ assessment.completed_date }}</td>
+                <td>
+                  <a href="{% url 'admin:view_assessment_detail' assessment.id %}" class="btn">View Details</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No assessments completed</p>
+      {% endif %}
+    </div>
+    
+    <div class="interview-history">
+      <h2>Interview History</h2>
+      {% if interviews %}
+        <table class="interview-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Interviewer</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for interview in interviews %}
+              <tr>
+                <td>{{ interview.date_time }}</td>
+                <td>{{ interview.interviewer }}</td>
+                <td>{{ interview.type }}</td>
+                <td>{{ interview.status }}</td>
+                <td>
+                  <a href="{% url 'admin:view_interview_notes' interview.id %}" class="btn">View Notes</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No interviews scheduled</p>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="evaluation-section">
+    <h2>Application Evaluation</h2>
+    <form method="post" action="{% url 'admin:save_application_review' candidate.id %}">
+      {% csrf_token %}
+      
+      <div class="rating-section">
+        <h3>Skills Assessment</h3>
+        {% for skill in skill_ratings %}
+          <div class="rating-item">
+            <label for="skill_{{ skill.id }}">{{ skill.name }}:</label>
+            <select name="skill_{{ skill.id }}" id="skill_{{ skill.id }}">
+              <option value="">Select Rating</option>
+              <option value="1">1 - Poor</option>
+              <option value="2">2 - Below Average</option>
+              <option value="3">3 - Average</option>
+              <option value="4">4 - Good</option>
+              <option value="5">5 - Excellent</option>
+            </select>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <div class="notes-section">
+        <h3>Review Notes</h3>
+        <textarea name="review_notes" rows="5" placeholder="Enter your notes about this candidate..."></textarea>
+      </div>
+      
+      <div class="decision-section">
+        <h3>Application Decision</h3>
+        <div class="radio-group">
+          <input type="radio" name="decision" id="decision_proceed" value="proceed">
+          <label for="decision_proceed">Proceed to next stage</label>
+        </div>
+        <div class="radio-group">
+          <input type="radio" name="decision" id="decision_hold" value="hold">
+          <label for="decision_hold">Hold for further review</label>
+        </div>
+        <div class="radio-group">
+          <input type="radio" name="decision" id="decision_reject" value="reject">
+          <label for="decision_reject">Reject application</label>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Save Review</button>
+        <a href="{% url 'admin:candidates_candidate_changelist' %}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+  {{ block.super }}
+  <script src="{% static 'candidates/js/admin_review.js' %}"></script>
+{% endblock %}

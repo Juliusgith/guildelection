@@ -1,0 +1,44 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block title %}Manage Positions{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'candidates/css/admin_style.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+  <a href="{% url 'admin:candidates_position_changelist' %}">Positions</a> &rsaquo;
+  Position List
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="position-list">
+  <h1>Manage Positions</h1>
+  
+  <a href="{% url 'admin:candidates_position_add' %}" class="btn btn-primary">Create Position</a>
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Approved Candidates</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for position in positions %}
+        <tr>
+          <td>{{ position.title }}</td>
+          <td>{{ position.candidate_count }}</td>
+          <td>
+            <a href="{% url 'admin:candidates_position_change' position.pk %}" class="btn btn-warning">Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

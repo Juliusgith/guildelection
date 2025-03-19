@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Apply for Candidacy - University Guild Council Voting System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Apply for Candidacy</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Display message if applications are closed -->
+                    {% if not is_application_active %}
+                        <div class="alert alert-warning">
+                            <h5 class="alert-heading">Applications Closed</h5>
+                            <p>Applications are currently closed. Please check back later for updates.</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Pending Applications -->
+                    {% if pending_applications %}
+                        <div class="alert alert-info">
+                            <h5 class="alert-heading">You have pending application(s):</h5>
+                            <ul class="mb-0">
+                                {% for application in pending_applications %}
+                                    <li>{{ application.position.title }} - Submitted on {{ application.created_at|date:"M d, Y" }}</li>
+                                {% endfor %}
+                            </ul>
+                            <hr>
+                            <p class="mb-0">You can still apply for other positions while these applications are under review.</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Form Section -->
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Check if positions exist before showing the dropdown -->
+                        <div class="mb-3">
+                            <label for="{{ form.position.id_for_label }}" class="form-label">Position:</label>
+                            {% if is_application_active and form.position.field.queryset.exists %}
+                                {{ form.position }}
+                            {% elif not is_application_active %}
+                                <p class="text-danger">Applications are currently closed. No positions available.</p>
+                            {% else %}
+                                <p class="text-danger">No active positions available. Please contact the admin.</p>
+                            {% endif %}
+                            {% if form.position.errors %}
+                                <div class="text-danger">{{ form.position.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.campaign_slogan.id_for_label }}" class="form-label">Campaign Slogan:</label>
+                            {{ form.campaign_slogan }}
+                            <small class="text-muted">A short, memorable phrase that represents your campaign</small>
+                            {% if form.campaign_slogan.errors %}
+                                <div class="text-danger">{{ form.campaign_slogan.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.manifesto.id_for_label }}" class="form-label">Manifesto:</label>
+                            {{ form.manifesto }}
+                            <small class="text-muted">Explain your vision, goals, and plans if elected</small>
+                            {% if form.manifesto.errors %}
+                                <div class="text-danger">{{ form.manifesto.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.photo.id_for_label }}" class="form-label">Your Photo:</label>
+                            {{ form.photo }}
+                            <small class="text-muted">Upload a professional photo of yourself</small>
+                            {% if form.photo.errors %}
+                                <div class="text-danger">{{ form.photo.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="mt-4">
+                            {% if is_application_active and form.position.field.queryset.exists %}
+                                <button type="submit" class="btn btn-primary">Submit Application</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary" disabled>Submit Application</button>
+                            {% endif %}
+                            <a href="{% url 'candidates:position_list' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                url('/static/images/build.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    
+}
+</style>
+{% endblock %}

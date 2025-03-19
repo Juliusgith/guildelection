@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Guild Voting System{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <!-- Brand Logo -->
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'home' %}">
+                <img src="/static/images/LOGO.jpg" alt="Logo" width="50" height="50" class="me-2">
+                <i class="fas fa-vote-yea me-2"></i>MIU Guild Voting System
+            </a>
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'voting' in request.path %}active{% endif %}" href="{% url 'voting:home' %}">
+                            <i class="fas fa-poll me-1"></i>Voting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'candidates' in request.path %}active{% endif %}" href="{% url 'candidates:position_list' %}">
+                            <i class="fas fa-user-tie me-1"></i>Candidates
+                        </a>
+                    </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">
+                            <i class="fas fa-cog me-1"></i>Admin
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <!-- Right-Side Menu -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'users:profile' %}">
+                                    <i class="fas fa-id-card me-1"></i>Profile
+                                </a>
+                            </li>
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'users:logout' %}">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item d-block d-lg-inline-block">
+                        <a class="nav-link btn btn-outline-light px-3 py-2 mb-2 d-block d-lg-inline-block" href="{% url 'users:login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item d-block d-lg-inline-block ms-lg-3">
+                        <a class="nav-link btn btn-light text-primary px-3 py-2 d-block d-lg-inline-block" href="{% url 'users:register' %}">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Floating Help & Scroll to Top Icons -->
+<!-- Floating Help & Scroll to Top Icons -->
+<div id="floatingButtons" class="position-fixed bottom-0 end-0 mb-4 me-3 d-flex flex-column align-items-end gap-3" style="z-index: 1000;">
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="btn btn-primary rounded-circle p-3 shadow-lg d-none"
+            data-bs-toggle="tooltip" data-bs-placement="left" title="Scroll to Top">
+        <i class="fas fa-arrow-up fa-2x"></i>
+    </button>
+    
+    <!-- WhatsApp Help Button with Text -->
+    <a id="whatsappBtn" href="https://wa.me/+256763764365?text=Hello%20Admin,%20I%20need%20help%20with%20the%20Guild%20Voting%20System"
+       class="d-none text-decoration-none d-flex align-items-center bg-success text-white rounded-pill shadow-lg px-3 py-2"
+       target="_blank">
+        <i class="fab fa-whatsapp fa-2x me-2"></i>
+        <span id="helpText">Need Help? Chat with Admin</span>
+    </a>
+
+</div>
+
+
+<!-- Scroll Behavior Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var scrollToTopBtn = document.getElementById("scrollToTop");
+        var whatsappBtn = document.getElementById("whatsappBtn");
+
+        // Show elements when scrolling down, hide at the top
+        window.addEventListener("scroll", function () {
+            if (window.scrollY > 200) {
+                whatsappBtn.classList.remove("d-none"); // Show WhatsApp button with text
+                scrollToTopBtn.classList.remove("d-none"); // Show Scroll to Top button
+            } else {
+                whatsappBtn.classList.add("d-none"); // Hide WhatsApp button with text
+                scrollToTopBtn.classList.add("d-none"); // Hide Scroll to Top button
+            }
+        });
+
+        // Scroll Smoothly to the Top
+        scrollToTopBtn.addEventListener("click", function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    });
+</script>
+
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="bg-dark text-white py-5 mt-4">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <div class="col-md-4">
+                    <h5 class="fw-bold">Guild Voting System</h5>
+                    <p class="text-white pb-2">A secure, fair, and transparent platform for university guild elections.</p>
+                    <p class="text-white">Ensuring democracy and student representation through technology.</p>
+                </div>
+    
+                <div class="col-md-3 mt-4 mt-md-0">
+                    <h5 class="fw-bold">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i> support@guildvoting.com</li>
+                        <li><i class="fas fa-phone me-2"></i> (+256) 780148847/763764365</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Metropolitan International University Kisoro Main Campus.</li>
+                    </ul>
+                </div>
+    
+                <div class="col-md-3 mt-4 mt-md-0 text-center text-md-start">
+                    <h5 class="fw-bold">Follow Us</h5>
+                    <div class="d-flex justify-content-center justify-content-md-start gap-3">
+                        <a href="#" class="text-white fs-5"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+    
+            <hr class="border-light my-4">
+    
+            <!-- Developers Info Section -->
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h6 class="text-white">Developed by <strong>I.T STUDENTS ASSOCIATION KISORO MAIN CAMPUS</strong></h6>
+                    <img src="/static/images/IT.jpg" alt="I.T Students Association Logo" width="100" height="100" class="rounded-circle mt-2">
+                </div>
+            </div>
+    
+            <!-- Copyright Text -->
+            <div class="text-center mt-4">
+                <p class="mb-0">&copy; {% now "Y" %} Guild Voting System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

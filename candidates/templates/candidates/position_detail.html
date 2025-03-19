@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ position.title }} - University Guild Council Voting System{% endblock %}
+
+{% block content %}
+    <!-- Overlay for Background -->
+    <div class="overlay"></div>
+
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-md-8 mx-auto">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb bg-transparent p-0 m-0 small">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'candidates:position_list' %}" class="text-decoration-none text-primary fw-bold">
+                                <i class="fas fa-chevron-left me-1"></i> Positions
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">{{ position.title }}</li>
+                    </ol>
+                </nav>
+
+                <!-- Title and Description -->
+                <h1 class="display-6 fw-bold mb-3 text-white">{{ position.title }}</h1>
+                <p class="lead text-white fs-5">{{ position.description }}</p>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="col-md-4 text-end mt-4">
+                <a href="{% url 'candidates:apply' %}" class="btn btn-primary btn-lg px-4">Apply for this Position</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Candidates ({{ candidate_count }})</h5>
+                    </div>
+                    {% if candidates %}
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                {% for candidate in candidates %}
+                                    <div class="list-group-item d-flex align-items-center position-relative">
+                                        <!-- Candidate Photo -->
+                                        <div class="me-3">
+                                            {% if candidate.photo %}
+                                                <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}" 
+                                                     class="rounded-circle shadow-sm" width="50" height="50">
+                                            {% else %}
+                                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                                     style="width: 50px; height: 50px; font-size: 20px;">
+                                                    {{ candidate.full_name|first }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <!-- Candidate Info -->
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ candidate.full_name }}</h5>
+                                            <p class="mb-1 text-muted">{{ candidate.program }} - {{ candidate.faculty }}</p>
+                                            {% if candidate.campaign_slogan %}
+                                                <small class="text-muted fst-italic">{{ candidate.campaign_slogan }}</small>
+                                            {% endif %}
+                                        </div>
+                                        <!-- Floating View Details Button -->
+                                        <a href="{% url 'candidates:candidate_detail' candidate.pk %}" 
+                                           class="btn btn-sm btn-primary position-absolute top-50 end-0 translate-middle-y me-3">
+                                            View Details
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card-body">
+                            <p class="text-center text-muted my-4">No candidates are currently running for this position.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Overlay for Background Image */
+    
+
+    /* Ensure Content is Above Overlay */
+    .container.py-5 {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* General Styles */
+    body {
+        font-family: 'Arial', sans-serif;
+        line-height: 1.6;
+    }
+
+    .display-6 {
+        font-size: 2rem; /* Larger font size for emphasis */
+        font-weight: bold;
+        color: #fff; /* White text for contrast */
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+    }
+
+    .lead {
+        font-size: 1.25rem; /* Slightly larger font size for readability */
+        color: #fff; /* White text for contrast */
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+    }
+
+    /* Breadcrumb Styling */
+    .breadcrumb {
+        padding: 0;
+        background-color: transparent;
+        font-size: 0.9rem;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: #fff; /* White separator */
+        margin: 0 8px;
+    }
+
+    .breadcrumb-item a {
+        color: #0d6efd; /* Primary blue color for links */
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: #0b5ed7; /* Darker blue on hover */
+        text-decoration: underline;
+    }
+
+    .breadcrumb-item.active {
+        color: #fff; /* White color for active item */
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .display-6 {
+            font-size: 1.75rem;
+        }
+
+        .lead {
+            font-size: 1rem;
+        }
+    }
+    body {
+    background-color: rgb(72, 75, 71);
+    
+}
+</style>
+{% endblock %}

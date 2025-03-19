@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container my-5">
+        <h2>Withdraw Application</h2>
+        
+        <p>Are you sure you want to withdraw your application for the position of <strong>{{ application.position.title }}</strong>?</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, withdraw my application</button>
+            <a href="{% url 'candidates:my_applications' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+{% endblock %}

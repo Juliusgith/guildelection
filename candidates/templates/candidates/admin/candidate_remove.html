@@ -1,0 +1,29 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block title %}Remove Candidate{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'candidates/css/admin_remove.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+  <a href="{% url 'admin:candidates_candidate_changelist' %}">Candidates</a> &rsaquo;
+  Remove Candidate
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="candidate-remove">
+  <h1>Remove Candidate: {{ candidate.user.full_name }}</h1>
+  
+  <p>Are you sure you want to remove {{ candidate.user.full_name }} from the position of {{ candidate.position.title }}?</p>
+  
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Remove</button>
+    <a href="{% url 'admin:candidates_candidate_changelist' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

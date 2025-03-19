@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - University Guild Council Voting System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary mb-3">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Profile Information</h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-1 mb-3">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h5>{{ user.full_name }}</h5>
+                    <ul class="list-group list-group-flush text-start mt-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Program/Course:
+                            <span class="badge bg-primary">{{ user.registration_number }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Faculty:
+                            <span class="badge bg-secondary">{{ user.faculty }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Year of Study:
+                            <span class="badge bg-info">{{ user.year_of_study }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Verification Status:
+                            {% if user.is_verified %}
+                                <span class="badge bg-success">Verified</span>
+                            {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="id_username">Username:</label>
+                            <input type="text" name="username" id="id_username" class="form-control" value="{{ user.username }}" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="id_email">Email Address:</label>
+                            <input type="email" name="email" id="id_email" class="form-control" value="{{ user.email }}" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="id_full_name">Full Name:</label>
+                            <input type="text" name="full_name" id="id_full_name" class="form-control" value="{{ user.full_name }}" required>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <p class="mb-0"><strong>Note:</strong> Program/Course, faculty, and year of study cannot be changed. If these details are incorrect, please contact the system administrator.</p>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Voting History</h4>
+                </div>
+                <div class="card-body">
+                    <p>You have participated in the following elections:</p>
+                    <ul class="list-group">
+                        {% for election in elections_voted %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ election.title }}
+                                <span class="badge bg-success">Completed</span>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">No voting history available.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

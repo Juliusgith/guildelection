@@ -1,0 +1,27 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block title %}Create/Edit Position{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'candidates/css/admin_form.css' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+  <a href="{% url 'admin:candidates_position_changelist' %}">Positions</a> &rsaquo;
+  {% if is_create %}Create Position{% else %}Edit Position{% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="position-form">
+  <h1>{% if is_create %}Create Position{% else %}Edit Position{% endif %}</h1>
+  
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save Position</button>
+  </form>
+</div>
+{% endblock %}
