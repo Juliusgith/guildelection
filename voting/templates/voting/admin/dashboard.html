@@ -1,0 +1,92 @@
+{% extends 'voting/base.html' %}
+
+{% block title %}Admin Dashboard - Voting System{% endblock %}
+
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Admin Dashboard</h1>
+            <p class="lead">Manage elections and view voting statistics.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Total Elections</h5>
+                    <p class="card-text display-4">{{ elections.count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Active Elections</h5>
+                    <p class="card-text display-4">{{ elections|dictsortreversed:"is_active"|first }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Registered Voters</h5>
+                    <p class="card-text display-4">{{ user_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Elections</h5>
+                    <a href="#" class="btn btn-primary btn-sm">Create New Election</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th>Votes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for election in elections %}
+                                    <tr>
+                                        <td>{{ election.title }}</td>
+                                        <td>{{ election.start_date|date:"M d, Y" }}</td>
+                                        <td>{{ election.end_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            {% if election.is_active and election.end_date >= now %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% elif election.end_date < now %}
+                                                <span class="badge bg-secondary">Completed</span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ election.vote_set.count }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'voting:results' election.id %}" class="btn btn-outline-primary">Results</a>
+                                                <a href="#" class="btn btn-outline-secondary">Edit</a>
+                                                <a href="#" class="btn btn-outline-danger">Delete</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ election.title }} - Results{% endblock %}
+
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'voting:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'voting:election_detail' election.id %}">{{ election.title }}</a></li>
+                    <li class="breadcrumb-item active">Results</li>
+                </ol>
+            </nav>
+            
+            <h1>{{ election.title }} - Results</h1>
+            <p class="lead">{{ election.description }}</p>
+            
+            <div class="alert alert-info">
+                <h4>Total Votes: {{ total_votes }}</h4>
+                <p>Election period: {{ election.start_date|date:"M d, Y" }} to {{ election.end_date|date:"M d, Y" }}</p>
+                {% if election.end_date >= now %}
+                    <div class="badge bg-warning text-dark">Results are preliminary as voting is still open</div>
+                {% else %}
+                    <div class="badge bg-success">Final Results</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if total_votes > 0 %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Results Breakdown</h5>
+                        
+                        {% for result in results %}
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0">{{ result.candidate.name }}</h6>
+                                    <span>{{ result.votes }} votes ({{ result.percentage|floatformat:1 }}%)</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar {% if forloop.first %}bg-success{% endif %}" role="progressbar" style="width: {{ result.percentage }}%" aria-valuenow="{{ result.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Winner</h5>
+                                
+                                {% with winner=results.0 %}
+                                    <div class="text-center my-3">
+                                        {% if winner.candidate.photo %}
+                                            <img src="{{ winner.candidate.photo.url }}" class="rounded-circle" alt="{{ winner.candidate.name }}" style="width: 150px; height: 150px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                                <span class="display-4 text-muted">{{ winner.candidate.name|make_list|first }}</span>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <h4 class="mt-3">{{ winner.candidate.name }}</h4>
+                                        <p>{{ winner.votes }} votes ({{ winner.percentage|floatformat:1 }}%)</p>
+                                        
+                                        {% if election.end_date >= now %}
+                                            <div class="badge bg-warning text-dark">Preliminary Winner</div>
+                                        {% else %}
+                                            <div class="badge bg-success">Elected</div>
+                                        {% endif %}
+                                    </div>
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Details</h5>
+                                
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Candidate</th>
+                                            <th class="text-center">Votes</th>
+                                            <th class="text-end">Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for result in results %}
+                                            <tr>
+                                                <td>{{ result.candidate.name }}</td>
+                                                <td class="text-center">{{ result.votes }}</td>
+                                                <td class="text-end">{{ result.percentage|floatformat:1 }}%</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <h4>No Votes Cast Yet</h4>
+                    <p>There are currently no votes for this election.</p>
+                    {% if election.end_date >= now and user.is_authenticated and not user_voted %}
+                        <a href="{% url 'voting:election_detail' election.id %}" class="btn btn-primary">Cast Your Vote</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'voting:election_detail' election.id %}" class="btn btn-outline-primary">Back to Election</a>
+        <a href="{% url 'voting:home' %}" class="btn btn-outline-secondary">Back to Home</a>
+    </div>
+
+    <style>
+         body {
+            background-color: rgb(195, 214, 231);
+}
+    </style>
+{% endblock %}
