@@ -1,0 +1,13 @@
+Django==3.1.7
+djangorestframework==3.12.2
+psycopg2==2.9.1  # If using PostgreSQL
+mysqlclient==2.0.3  # If using MySQL
+django-environ==0.4.5  # For managing environment variables
+django-crispy-forms==1.11.2  # For styling forms
+celery==5.0.5  # If using Celery for background tasks
+gunicorn==20.0.4  # For production server
+whitenoise==5.2.0  # For static file handling in production
+django-extensions==3.1.3  # For development utilities
+django-allauth==0.43.0  # If using authentication features
+django-debug-toolbar==3.2.1  # For debugging
+pillow==8.1.0  # For image processing
